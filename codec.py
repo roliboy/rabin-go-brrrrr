@@ -71,6 +71,26 @@ def encode_blocks(values, block_size):
     return "".join(map(lambda x: string_representation(x, block_size), values))
 
 
+""" Double the last N letters in a block, N being the block_size/64 rounded up
+"""
+def double_letters_in_block(text, block_size):
+    to_double = (block_size-1)//64 + 1
+    # Add spaces to fit in block_size
+
+    chunks = split_into_chunks(text, block_size-to_double)
+    if len(chunks[-1]) < block_size-to_double:
+        chunks[-1] += "_" * (block_size-to_double - len(chunks[-1]))
+    return ''.join(list(map(lambda x: x+x[-to_double], chunks)))
+
+def check_doubling(text, block_size):
+    to_double = (block_size-1)//64 + 1
+    return text[-to_double:] == text[-2*to_double:-to_double]
+
+def de_double(text, block_size):
+    to_double = (block_size-1)//64 + 1
+    return text[:-to_double]
+
+
 """ Splits a string into blocks of a given size and
 decodes the blocks to their numeric equivalents
 ('ayylmao', 2) -> [52, 687, 352, 15]
